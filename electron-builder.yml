@@ -1,0 +1,20 @@
+appId: dev.sevovich.limitbar
+productName: LimitBar
+asar: true
+npmRebuild: false
+directories:
+  output: release
+files:
+  - dist/**/*
+  - package.json
+mac:
+  category: public.app-category.developer-tools
+  icon: build/icon.png
+  minimumSystemVersion: "14.0"
+  extendInfo:
+    LSUIElement: true
+  target:
+    - target: zip
+      arch:
+        - arm64
+artifactName: ${productName}-${version}-mac-${arch}.${ext}

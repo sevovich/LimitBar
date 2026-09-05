@@ -1,0 +1,74 @@
+import type { AppState } from '../shared/contracts'
+
+export const demoState: AppState = {
+  providers: {
+    codex: {
+      provider: 'codex',
+      displayName: 'Codex',
+      source: 'app-server',
+      status: 'ready',
+      plan: 'Plus',
+      updatedAt: new Date().toISOString(),
+      error: null,
+      retryAfter: null,
+      windows: [
+        {
+          id: 'primary',
+          kind: 'five-hour',
+          label: '5-hour',
+          durationMinutes: 300,
+          remainingPercent: 68,
+          resetsAt: new Date(Date.now() + 2.7 * 3_600_000).toISOString(),
+          modelName: null,
+        },
+        {
+          id: 'secondary',
+          kind: 'weekly',
+          label: 'Weekly',
+          durationMinutes: 10_080,
+          remainingPercent: 39,
+          resetsAt: new Date(Date.now() + 4.2 * 86_400_000).toISOString(),
+          modelName: null,
+        },
+      ],
+    },
+    claude: {
+      provider: 'claude',
+      displayName: 'Claude',
+      source: 'oauth',
+      status: 'ready',
+      plan: 'Max',
+      updatedAt: new Date(Date.now() - 48_000).toISOString(),
+      error: null,
+      retryAfter: null,
+      windows: [
+        {
+          id: 'five_hour',
+          kind: 'five-hour',
+          label: '5-hour',
+          durationMinutes: 300,
+          remainingPercent: 53,
+          resetsAt: new Date(Date.now() + 3.4 * 3_600_000).toISOString(),
+          modelName: null,
+        },
+        {
+          id: 'seven_day',
+          kind: 'weekly',
+          label: 'Weekly',
+          durationMinutes: 10_080,
+          remainingPercent: 27,
+          resetsAt: new Date(Date.now() + 2.1 * 86_400_000).toISOString(),
+          modelName: null,
+        },
+      ],
+    },
+  },
+  settings: {
+    showFiveHour: true,
+    showWeekly: true,
+    claudeSource: 'oauth',
+    launchAtLogin: false,
+  },
+  refreshing: false,
+  nextRefreshAt: new Date(Date.now() + 252_000).toISOString(),
+}
