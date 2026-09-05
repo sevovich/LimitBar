@@ -4,6 +4,7 @@ import path from 'node:path'
 
 export default defineConfig({
   root: path.resolve('src/renderer'),
+  base: './',
   plugins: [react()],
   build: {
     outDir: path.resolve('dist/renderer'),
