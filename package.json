@@ -1,6 +1,6 @@
 {
   "name": "limitbar",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A private, local-first macOS menu-bar monitor for Codex and Claude Code limits.",
   "author": "sevovich",
   "license": "MIT",

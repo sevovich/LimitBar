@@ -57,13 +57,10 @@ export class UsageCoordinator {
     this.state = { ...this.state, refreshing: true }
     this.emit()
 
-    const claudeProbe =
-      this.state.settings.claudeSource === 'local'
-        ? probeClaudeLocal
-        : this.state.settings.claudeSource === 'desktop'
-          ? probeClaudeDesktop
-          : probeClaudeOAuth
-    const [codex, claude] = await Promise.all([probeCodex(), claudeProbe()])
+    const [codex, claude] = await Promise.all([
+      probeCodex(),
+      probeClaudeWithFallback(this.state.settings.claudeSource),
+    ])
     const providers = {
       codex: mergeWithCache(codex, this.state.providers.codex),
       claude: mergeWithCache(claude, this.state.providers.claude),
@@ -104,6 +101,18 @@ export class UsageCoordinator {
     const snapshot = this.getState()
     for (const listener of this.listeners) listener(snapshot)
   }
+}
+
+async function probeClaudeWithFallback(source: AppState['settings']['claudeSource']): Promise<ProviderSnapshot> {
+  const primary = source === 'local'
+    ? await probeClaudeLocal()
+    : source === 'desktop'
+      ? await probeClaudeDesktop()
+      : await probeClaudeOAuth()
+
+  if (primary.status !== 'unavailable' || source === 'desktop') return primary
+  const desktop = await probeClaudeDesktop()
+  return desktop.status === 'unavailable' ? primary : desktop
 }
 
 export function nextRefreshTime(providers: AppState['providers']): Date {

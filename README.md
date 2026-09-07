@@ -2,7 +2,7 @@
 
 LimitBar is a small, local-first macOS menu-bar app that shows how much of your Codex and Claude subscription limits remains.
 
-The menu bar shows one colored item per provider. A green Codex item and an orange Claude item might read `68/39` and `53/27`; those are the remaining percentages for the 5-hour and weekly windows.
+The menu bar shows one LimitBar item with colored provider markers. A green Codex marker and an orange Claude marker might read `🟢 68/39   🟠 53/27`; those are the remaining percentages for the 5-hour and weekly windows.
 
 ## What it does
 
@@ -12,6 +12,7 @@ The menu bar shows one colored item per provider. A green Codex item and an oran
 - Reads Codex limits through the locally installed Codex CLI.
 - Uses Claude Code's existing OAuth sign-in by default, with Claude Desktop history and a local snapshot mode as alternatives.
 - Refreshes every five minutes and keeps the last successful reading when a provider is temporarily unavailable.
+- Uses a macOS single-instance lock so launching it twice cannot create duplicate menu items.
 - Stores no access tokens. Cached usage data and settings stay on your Mac.
 
 ## Requirements

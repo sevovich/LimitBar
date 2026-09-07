@@ -4,7 +4,7 @@
 
 LimitBar is a small, self-built macOS menu-bar application for Apple Silicon Macs running macOS 14 or later. It shows the remaining subscription capacity for Codex and Claude Code without requiring the user to open either application.
 
-The menu bar shows two compact status items, one green for Codex and one orange for Claude. Each title contains the provider's remaining percentages, such as `68/39` for five-hour and weekly capacity.
+The menu bar shows one compact status item with colored provider markers. A title such as `🟢 68/39   🟠 53/27` identifies Codex and Claude while keeping both providers in one item.
 
 ## First-release scope
 
@@ -63,7 +63,7 @@ Desktop mode reads the latest sanitized sample from Claude Desktop's local `plan
 
 ## User interface
 
-Each tray item uses monospaced digits and compact values. With both windows enabled, it renders `short/long`; if one window is disabled, it renders one number. The colored icon identifies the provider without a `C` or `A` prefix. Missing values render as an em dash and stale values keep their last number with a visible stale state in the popover. Window toggles apply to the menu bar titles only; the popover always shows both windows.
+The tray item uses monospaced digits and compact values. With both windows enabled, each provider renders `short/long`; if one window is disabled, it renders one number. Colored markers identify the providers without a `C` or `A` prefix. Missing values render as an em dash and stale values keep their last number with a visible stale state in the popover. Window toggles apply to the menu bar title only; the popover always shows both windows. A macOS single-instance lock prevents duplicate menu items when the app is launched more than once.
 
 Clicking the tray opens a compact, keyboard-accessible popover with one card per provider. Each card shows remaining percentage bars, human-readable reset times, last refresh time, source mode, and any actionable error. Remaining-capacity colors progress from green to amber to red as capacity falls.
 
