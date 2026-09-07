@@ -96,20 +96,25 @@ export function App() {
                 <i aria-hidden="true" />
               </label>
               <label className="switch-row">
+                <span><strong>Show 5-hour reset</strong><small>Time remaining in the menu bar</small></span>
+                <input type="checkbox" checked={state.settings.showFiveHourReset} onChange={(event) => void updateSettings({ showFiveHourReset: event.target.checked })} />
+                <i aria-hidden="true" />
+              </label>
+              <label className="switch-row">
                 <span><strong>Show weekly limits</strong><small>Long usage window</small></span>
                 <input type="checkbox" checked={state.settings.showWeekly} onChange={(event) => void updateSettings({ showWeekly: event.target.checked })} />
+                <i aria-hidden="true" />
+              </label>
+              <label className="switch-row">
+                <span><strong>Show weekly reset</strong><small>Time remaining in the menu bar</small></span>
+                <input type="checkbox" checked={state.settings.showWeeklyReset} onChange={(event) => void updateSettings({ showWeeklyReset: event.target.checked })} />
                 <i aria-hidden="true" />
               </label>
             </fieldset>
 
             <fieldset>
-              <legend>Claude data source</legend>
-              <div className="segmented" role="radiogroup" aria-label="Claude data source">
-                <label><input type="radio" name="claude-source" checked={state.settings.claudeSource === 'oauth'} onChange={() => void updateSettings({ claudeSource: 'oauth' })} /><span>OAuth</span></label>
-                <label><input type="radio" name="claude-source" checked={state.settings.claudeSource === 'desktop'} onChange={() => void updateSettings({ claudeSource: 'desktop' })} /><span>Desktop</span></label>
-                <label><input type="radio" name="claude-source" checked={state.settings.claudeSource === 'local'} onChange={() => void updateSettings({ claudeSource: 'local' })} /><span>Local</span></label>
-              </div>
-              <p className="source-note">Desktop reads the live usage panel through macOS Accessibility, with fresh local history as a fallback. OAuth and Local can be used instead. Tokens are never stored.</p>
+              <legend>Claude authentication</legend>
+              <p className="source-note">LimitBar uses Claude Code's OAuth session and Anthropic's usage API. Install Claude Code, run <code>claude</code>, and sign in with Claude.ai. Claude Desktop does not need to be open.</p>
             </fieldset>
 
             <label className="switch-row standalone">

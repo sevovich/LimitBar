@@ -16,6 +16,7 @@ import { StateStore } from './store'
 let tray: Tray | null = null
 let popover: BrowserWindow | null = null
 let coordinator: UsageCoordinator | null = null
+let trayClockTimer: NodeJS.Timeout | null = null
 let quitting = false
 
 app.setName('LimitBar')
@@ -146,10 +147,15 @@ app.whenReady().then(async () => {
   )
   coordinator.subscribe(updateUi)
   await coordinator.start()
+  trayClockTimer = setInterval(() => {
+    if (coordinator) updateUi(coordinator.getState())
+  }, 30_000)
 })
 
 app.on('before-quit', () => {
   quitting = true
+  if (trayClockTimer) clearInterval(trayClockTimer)
+  trayClockTimer = null
   coordinator?.stop()
 })
 

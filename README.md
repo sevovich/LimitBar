@@ -4,13 +4,15 @@ LimitBar is a small, local-first macOS menu-bar app that shows how much of your 
 
 The menu bar shows one LimitBar item with colored provider markers. A green Codex marker and an orange Claude marker might read `🟢 68/39   🟠 53/27`; those are the remaining percentages for the 5-hour and weekly windows.
 
+Reset countdowns are optional per window and use compact `d`, `h`, and `m` units, for example `🟢 68 2h14m/39 2d3h14m`.
+
 ## What it does
 
 - Shows Codex and Claude together in the macOS menu bar.
 - Displays **remaining** percentages for 5-hour and weekly windows.
-- Lets you choose which windows appear in the menu bar; the popover always keeps both windows available.
+- Lets you choose which windows and compact reset countdowns appear in the menu bar; the popover always keeps both windows available.
 - Reads Codex limits through the locally installed Codex CLI.
-- Uses Claude Code's existing OAuth sign-in by default, with a live Claude Desktop panel reader and a local snapshot mode as alternatives.
+- Uses Claude Code's existing OAuth sign-in and Anthropic's usage API for Claude limits.
 - Refreshes every five minutes and keeps the last successful reading when a provider is temporarily unavailable.
 - Uses a macOS single-instance lock so launching it twice cannot create duplicate menu items.
 - Stores no access tokens. Cached usage data and settings stay on your Mac.
@@ -21,7 +23,7 @@ The menu bar shows one LimitBar item with colored provider markers. A green Code
 - macOS 14 or newer
 - Node.js 22 or newer
 - Codex CLI installed and signed in
-- Claude Code or Claude Desktop installed and signed in (for Claude limits)
+- Claude Code installed and signed in with a Claude.ai account (for Claude limits)
 
 ## Build and run
 
@@ -54,21 +56,13 @@ Because the app is unsigned, macOS may block the first launch. Right-click **Lim
 
 LimitBar starts `codex app-server` locally and asks it for the signed-in account's current rate-limit windows. It never reads or stores the Codex access token.
 
-### Claude — OAuth (default)
+### Claude — Claude Code OAuth
 
-LimitBar checks `claude auth status`, then reads Claude Code's existing credential from macOS Keychain and calls Anthropic's usage endpoint. macOS may ask you to approve Keychain access on first use. The token is held only in memory for that request.
+Claude Code authentication is required. Install Claude Code, run `claude`, and complete the Claude.ai sign-in flow before starting LimitBar. LimitBar checks `claude auth status`, then reads Claude Code's existing credential from macOS Keychain and calls Anthropic's usage endpoint. macOS may ask you to approve Keychain access on first use. The token is held only in memory for that request.
 
-### Claude — local snapshot
+Using Claude Desktop does not replace this step. Claude Desktop can be installed, open, or closed; LimitBar does not inspect its UI, local files, credentials, or Accessibility tree.
 
-This option installs a small status-line helper into Claude Code's settings. Claude Code writes its limit data to `~/.limitbar/claude-usage.json`; LimitBar only reads that file. An existing Claude status-line command is preserved and chained, then restored if you switch back to OAuth.
-
-Local snapshots require a Claude Code version that includes `rate_limits` in status-line input. If no snapshot exists, open Claude Code and send a message once.
-
-### Claude — Desktop
-
-Desktop mode reads the live usage panel from Claude Desktop through macOS Accessibility. LimitBar opens the panel if needed, then reads the 5-hour and weekly percentages shown there. The local `plan-usage-history.json` is used only when it contains a fresh sample; old samples are never shown as current. LimitBar does not read Claude Desktop credentials or make a second usage request.
-
-The first time this is used, allow `/usr/bin/osascript` under System Settings → Privacy & Security → Accessibility, then restart LimitBar. Claude Desktop must be open and signed in. macOS grants this permission to the helper that reads the panel, not just to the LimitBar window.
+If Claude Code is missing, not signed in, using an API key, or blocked from reading its Keychain credential, the Claude card explains the required action. API-key authentication does not expose Claude subscription limit windows.
 
 ## Development
 

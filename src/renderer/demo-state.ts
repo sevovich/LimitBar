@@ -66,7 +66,8 @@ export const demoState: AppState = {
   settings: {
     showFiveHour: true,
     showWeekly: true,
-    claudeSource: 'oauth',
+    showFiveHourReset: false,
+    showWeeklyReset: false,
     launchAtLogin: false,
   },
   refreshing: false,

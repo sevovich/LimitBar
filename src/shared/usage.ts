@@ -12,7 +12,8 @@ export const WEEKLY_MINUTES = 7 * 24 * 60
 export const DEFAULT_SETTINGS: AppSettings = {
   showFiveHour: true,
   showWeekly: true,
-  claudeSource: 'oauth',
+  showFiveHourReset: false,
+  showWeeklyReset: false,
   launchAtLogin: false,
 }
 
@@ -78,10 +79,13 @@ export function emptyProvider(provider: ProviderId): ProviderSnapshot {
 }
 
 export function validateSettings(settings: AppSettings): AppSettings {
-  if (!settings.showFiveHour && !settings.showWeekly) {
-    return { ...settings, showWeekly: true }
+  return {
+    showFiveHour: settings.showFiveHour || (!settings.showFiveHour && !settings.showWeekly),
+    showWeekly: settings.showWeekly || (!settings.showFiveHour && !settings.showWeekly),
+    showFiveHourReset: settings.showFiveHourReset,
+    showWeeklyReset: settings.showWeeklyReset,
+    launchAtLogin: settings.launchAtLogin,
   }
-  return settings
 }
 
 export function getWindow(
@@ -94,7 +98,7 @@ export function getWindow(
 
 export function formatTrayTitle(
   providers: Record<ProviderId, ProviderSnapshot>,
-  settings: Pick<AppSettings, 'showFiveHour' | 'showWeekly'>,
+  settings: Pick<AppSettings, 'showFiveHour' | 'showWeekly' | 'showFiveHourReset' | 'showWeeklyReset'>,
 ): string {
   return (['codex', 'claude'] as const)
     .map((provider) => formatProviderTrayTitle(providers[provider], settings))
@@ -103,16 +107,33 @@ export function formatTrayTitle(
 
 export function formatProviderTrayTitle(
   snapshot: ProviderSnapshot,
-  settings: Pick<AppSettings, 'showFiveHour' | 'showWeekly'>,
+  settings: Pick<AppSettings, 'showFiveHour' | 'showWeekly' | 'showFiveHourReset' | 'showWeeklyReset'>,
 ): string {
   const values: string[] = []
   if (settings.showFiveHour) {
-    values.push(getWindow(snapshot, 'five-hour')?.remainingPercent.toString() ?? '—')
+    values.push(formatTrayWindow(getWindow(snapshot, 'five-hour'), settings.showFiveHourReset))
   }
   if (settings.showWeekly) {
-    values.push(getWindow(snapshot, 'weekly')?.remainingPercent.toString() ?? '—')
+    values.push(formatTrayWindow(getWindow(snapshot, 'weekly'), settings.showWeeklyReset))
   }
   return values.join('/')
+}
+
+function formatTrayWindow(window: LimitWindow | undefined, includeReset: boolean): string {
+  if (!window) return '—'
+  const reset = includeReset && window.resetsAt ? ` ${formatResetRemaining(window.resetsAt)}` : ''
+  return `${window.remainingPercent}${reset}`
+}
+
+export function formatResetRemaining(timestamp: string, now = Date.now()): string {
+  const remainingMs = Math.max(0, new Date(timestamp).getTime() - now)
+  const totalMinutes = Math.ceil(remainingMs / 60_000)
+  const days = Math.floor(totalMinutes / (24 * 60))
+  const hours = Math.floor((totalMinutes % (24 * 60)) / 60)
+  const minutes = totalMinutes % 60
+  if (days > 0) return `${days}d${hours > 0 ? `${hours}h` : ''}${minutes > 0 ? `${minutes}m` : ''}`
+  if (hours > 0) return `${hours}h${minutes > 0 ? `${minutes}m` : ''}`
+  return `${minutes}m`
 }
 
 export function remainingTone(remaining: number): 'safe' | 'watch' | 'critical' {

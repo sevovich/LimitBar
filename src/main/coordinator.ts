@@ -4,9 +4,6 @@ import type {
   SettingsPatch,
 } from '../shared/contracts'
 import { validateSettings } from '../shared/usage'
-import { configureClaudeLocalSnapshots, probeClaudeLocal } from './providers/claude-local'
-import { probeClaudeAccessibility } from './providers/claude-accessibility'
-import { probeClaudeDesktop } from './providers/claude-desktop'
 import { probeClaudeOAuth } from './providers/claude'
 import { probeCodex } from './providers/codex'
 import { StateStore } from './store'
@@ -60,7 +57,7 @@ export class UsageCoordinator {
 
     const [codex, claude] = await Promise.all([
       probeCodex(),
-      probeClaudeWithFallback(this.state.settings.claudeSource),
+      probeClaudeOAuth(),
     ])
     const providers = {
       codex: mergeWithCache(codex, this.state.providers.codex),
@@ -82,13 +79,6 @@ export class UsageCoordinator {
   async updateSettings(patch: SettingsPatch): Promise<AppState> {
     const previous = this.state.settings
     const settings = validateSettings({ ...previous, ...patch })
-    if (settings.claudeSource !== previous.claudeSource) {
-      await configureClaudeLocalSnapshots(settings.claudeSource === 'local')
-      this.state.providers.claude = {
-        ...this.state.providers.claude,
-        source: settings.claudeSource,
-      }
-    }
     if (settings.launchAtLogin !== previous.launchAtLogin) {
       this.onLaunchAtLogin(settings.launchAtLogin)
     }
@@ -104,28 +94,6 @@ export class UsageCoordinator {
   }
 }
 
-async function probeClaudeWithFallback(source: AppState['settings']['claudeSource']): Promise<ProviderSnapshot> {
-  const primary = source === 'local'
-    ? await probeClaudeLocal()
-    : source === 'desktop'
-      ? await probeClaudeDesktop()
-      : await probeClaudeOAuth()
-
-  if (primary.status !== 'unavailable' || source === 'desktop') {
-    if (source === 'desktop') {
-      const live = await probeClaudeAccessibility()
-      if (live.status === 'ready') return live
-      const history = await probeClaudeDesktop()
-      return history.status === 'ready' ? history : live
-    }
-    return primary
-  }
-  const live = await probeClaudeAccessibility()
-  if (live.status === 'ready') return live
-  const desktop = await probeClaudeDesktop()
-  return desktop.status === 'ready' ? desktop : live
-}
-
 export function nextRefreshTime(providers: AppState['providers']): Date {
   const regular = Date.now() + refreshIntervalMs
   const retryTimes = Object.values(providers)
@@ -138,7 +106,6 @@ function mergeWithCache(
   fresh: ProviderSnapshot,
   cached: ProviderSnapshot,
 ): ProviderSnapshot {
-  if (fresh.status === 'unavailable' && cached.source === 'desktop') return fresh
   if (fresh.status !== 'unavailable' || cached.windows.length === 0) return fresh
   return {
     ...cached,
@@ -154,22 +121,14 @@ export function assertSettingsPatch(value: unknown): SettingsPatch {
     throw new Error('Invalid settings update.')
   }
   const input = value as Record<string, unknown>
-  const allowed = new Set(['showFiveHour', 'showWeekly', 'claudeSource', 'launchAtLogin'])
+  const allowed = new Set(['showFiveHour', 'showWeekly', 'showFiveHourReset', 'showWeeklyReset', 'launchAtLogin'])
   if (Object.keys(input).some((key) => !allowed.has(key))) throw new Error('Unknown setting.')
   if (
-    ['showFiveHour', 'showWeekly', 'launchAtLogin'].some(
+    ['showFiveHour', 'showWeekly', 'showFiveHourReset', 'showWeeklyReset', 'launchAtLogin'].some(
       (key) => key in input && typeof input[key] !== 'boolean',
     )
   ) {
     throw new Error('Invalid boolean setting.')
-  }
-  if (
-    'claudeSource' in input &&
-    input.claudeSource !== 'oauth' &&
-    input.claudeSource !== 'desktop' &&
-    input.claudeSource !== 'local'
-  ) {
-    throw new Error('Invalid Claude source.')
   }
   return input as SettingsPatch
 }

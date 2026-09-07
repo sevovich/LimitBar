@@ -14,6 +14,8 @@ required CLI authentication step.
 ## User-facing behavior
 
 - The Settings view no longer offers Claude source selection.
+- The Settings view offers independent global toggles for showing the 5-hour
+  and weekly reset countdowns in the menu bar.
 - The Claude card identifies the source as Claude Code OAuth.
 - If Claude Code is missing, not signed in, using an API key, or cannot access
   its credential, the card shows an actionable error explaining the required

@@ -1,8 +1,7 @@
 export type ProviderId = 'codex' | 'claude'
-export type ProviderSource = 'app-server' | 'oauth' | 'desktop' | 'local'
+export type ProviderSource = 'app-server' | 'oauth'
 export type ProviderStatus = 'loading' | 'ready' | 'stale' | 'unavailable'
 export type LimitKind = 'five-hour' | 'weekly' | 'other'
-export type ClaudeSource = 'oauth' | 'desktop' | 'local'
 
 export interface LimitWindow {
   id: string
@@ -29,7 +28,8 @@ export interface ProviderSnapshot {
 export interface AppSettings {
   showFiveHour: boolean
   showWeekly: boolean
-  claudeSource: ClaudeSource
+  showFiveHourReset: boolean
+  showWeeklyReset: boolean
   launchAtLogin: boolean
 }
 
@@ -43,7 +43,8 @@ export interface AppState {
 export interface SettingsPatch {
   showFiveHour?: boolean
   showWeekly?: boolean
-  claudeSource?: ClaudeSource
+  showFiveHourReset?: boolean
+  showWeeklyReset?: boolean
   launchAtLogin?: boolean
 }
 
