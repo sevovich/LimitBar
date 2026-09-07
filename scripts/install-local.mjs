@@ -8,6 +8,6 @@ const destination = path.join(applications, 'LimitBar.app')
 
 await mkdir(applications, { recursive: true })
 await rm(destination, { recursive: true, force: true })
-await cp(source, destination, { recursive: true })
+await cp(source, destination, { recursive: true, dereference: true })
 
 console.log(`Installed LimitBar to ${destination}`)
