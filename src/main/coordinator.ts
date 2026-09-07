@@ -5,6 +5,7 @@ import type {
 } from '../shared/contracts'
 import { validateSettings } from '../shared/usage'
 import { configureClaudeLocalSnapshots, probeClaudeLocal } from './providers/claude-local'
+import { probeClaudeAccessibility } from './providers/claude-accessibility'
 import { probeClaudeDesktop } from './providers/claude-desktop'
 import { probeClaudeOAuth } from './providers/claude'
 import { probeCodex } from './providers/codex'
@@ -110,9 +111,19 @@ async function probeClaudeWithFallback(source: AppState['settings']['claudeSourc
       ? await probeClaudeDesktop()
       : await probeClaudeOAuth()
 
-  if (primary.status !== 'unavailable' || source === 'desktop') return primary
+  if (primary.status !== 'unavailable' || source === 'desktop') {
+    if (source === 'desktop') {
+      const live = await probeClaudeAccessibility()
+      if (live.status === 'ready') return live
+      const history = await probeClaudeDesktop()
+      return history.status === 'ready' ? history : live
+    }
+    return primary
+  }
+  const live = await probeClaudeAccessibility()
+  if (live.status === 'ready') return live
   const desktop = await probeClaudeDesktop()
-  return desktop.status === 'unavailable' ? primary : desktop
+  return desktop.status === 'ready' ? desktop : live
 }
 
 export function nextRefreshTime(providers: AppState['providers']): Date {
@@ -127,6 +138,7 @@ function mergeWithCache(
   fresh: ProviderSnapshot,
   cached: ProviderSnapshot,
 ): ProviderSnapshot {
+  if (fresh.status === 'unavailable' && cached.source === 'desktop') return fresh
   if (fresh.status !== 'unavailable' || cached.windows.length === 0) return fresh
   return {
     ...cached,

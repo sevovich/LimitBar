@@ -56,17 +56,29 @@ export function parseClaudeDesktopUsage(
   if (windows.length === 0) throw new Error('Claude Desktop reported no subscription limits.')
 
   const stale = now.getTime() - observedAt.getTime() > staleAfterMs
+  if (stale) {
+    return {
+      provider: 'claude',
+      displayName: 'Claude',
+      source: 'desktop',
+      status: 'unavailable',
+      plan: null,
+      windows: [],
+      updatedAt: observedAt.toISOString(),
+      error: `Claude Desktop history is from ${observedAt.toISOString().slice(0, 10)} and is too old to use. LimitBar could not read the live Desktop panel.`,
+      retryAfter: null,
+    }
+  }
+
   return {
     provider: 'claude',
     displayName: 'Claude',
     source: 'desktop',
-    status: stale ? 'stale' : 'ready',
+    status: 'ready',
     plan: null,
     windows,
     updatedAt: observedAt.toISOString(),
-    error: stale
-      ? 'Claude Desktop has not refreshed usage for more than 15 minutes. Open it to update the reading.'
-      : null,
+    error: null,
     retryAfter: null,
   }
 }

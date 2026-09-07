@@ -10,7 +10,7 @@ The menu bar shows one LimitBar item with colored provider markers. A green Code
 - Displays **remaining** percentages for 5-hour and weekly windows.
 - Lets you choose which windows appear in the menu bar; the popover always keeps both windows available.
 - Reads Codex limits through the locally installed Codex CLI.
-- Uses Claude Code's existing OAuth sign-in by default, with Claude Desktop history and a local snapshot mode as alternatives.
+- Uses Claude Code's existing OAuth sign-in by default, with a live Claude Desktop panel reader and a local snapshot mode as alternatives.
 - Refreshes every five minutes and keeps the last successful reading when a provider is temporarily unavailable.
 - Uses a macOS single-instance lock so launching it twice cannot create duplicate menu items.
 - Stores no access tokens. Cached usage data and settings stay on your Mac.
@@ -66,7 +66,9 @@ Local snapshots require a Claude Code version that includes `rate_limits` in sta
 
 ### Claude — Desktop
 
-Desktop mode reads Claude Desktop's local `plan-usage-history.json`, which contains the app's sampled 5-hour and 7-day percentages. It does not read Claude Desktop credentials or make a second usage request. Open Claude Desktop to let it refresh the file; readings older than 15 minutes are shown as stale.
+Desktop mode reads the live usage panel from Claude Desktop through macOS Accessibility. LimitBar opens the panel if needed, then reads the 5-hour and weekly percentages shown there. The local `plan-usage-history.json` is used only when it contains a fresh sample; old samples are never shown as current. LimitBar does not read Claude Desktop credentials or make a second usage request.
+
+The first time this is used, allow `/usr/bin/osascript` under System Settings → Privacy & Security → Accessibility, then restart LimitBar. Claude Desktop must be open and signed in. macOS grants this permission to the helper that reads the panel, not just to the LimitBar window.
 
 ## Development
 

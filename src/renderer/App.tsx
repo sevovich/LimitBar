@@ -109,7 +109,7 @@ export function App() {
                 <label><input type="radio" name="claude-source" checked={state.settings.claudeSource === 'desktop'} onChange={() => void updateSettings({ claudeSource: 'desktop' })} /><span>Desktop</span></label>
                 <label><input type="radio" name="claude-source" checked={state.settings.claudeSource === 'local'} onChange={() => void updateSettings({ claudeSource: 'local' })} /><span>Local</span></label>
               </div>
-              <p className="source-note">Desktop reads Claude’s local usage history. If OAuth or Local has no data, LimitBar falls back to Desktop. Tokens are never stored.</p>
+              <p className="source-note">Desktop reads the live usage panel through macOS Accessibility, with fresh local history as a fallback. OAuth and Local can be used instead. Tokens are never stored.</p>
             </fieldset>
 
             <label className="switch-row standalone">
