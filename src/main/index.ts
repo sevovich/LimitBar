@@ -23,16 +23,16 @@ app.setName('LimitBar')
 function createTray(): void {
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
-      <circle cx="9" cy="9" r="6.4" fill="none" stroke="black" stroke-width="1.7" opacity=".45"/>
-      <path d="M9 2.6a6.4 6.4 0 0 1 5.5 9.65" fill="none" stroke="black" stroke-width="1.7" stroke-linecap="round"/>
-      <circle cx="9" cy="9" r="1.35" fill="black"/>
+      <circle cx="9" cy="9" r="7" fill="none" stroke="#168067" stroke-width="1.5" opacity=".26"/>
+      <path d="M9 2a7 7 0 1 1-6.5 9.6" fill="none" stroke="#168067" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M9 2a7 7 0 0 1 5.9 10.8" fill="none" stroke="#b45b36" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="9" cy="9" r="1.25" fill="#777b80"/>
     </svg>`
   const icon = nativeImage.createFromDataURL(
     `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`,
   )
-  icon.setTemplateImage(true)
   tray = new Tray(icon)
-  tray.setToolTip('LimitBar')
+  tray.setToolTip('LimitBar · green Codex · orange Claude')
   tray.on('click', togglePopover)
   tray.on('right-click', () => tray?.popUpContextMenu(buildContextMenu()))
 }

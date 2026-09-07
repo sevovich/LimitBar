@@ -76,7 +76,7 @@ export async function probeCodex(): Promise<ProviderSnapshot> {
         JSON.stringify({
           id: 1,
           method: 'initialize',
-          params: { clientInfo: { name: 'limitbar', version: '0.1.1' } },
+          params: { clientInfo: { name: 'limitbar', version: '0.1.2' } },
         }),
         JSON.stringify({ method: 'initialized', params: {} }),
         JSON.stringify({ id: requestId, method: 'account/rateLimits/read', params: {} }),

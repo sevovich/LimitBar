@@ -23,4 +23,14 @@ describe('LimitBar renderer', () => {
     fireEvent.click(screen.getByRole('radio', { name: 'Local' }))
     expect(screen.getByRole('radio', { name: 'Local' })).toBeChecked()
   })
+
+  it('keeps both provider windows visible when a menu bar window is hidden', () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+    fireEvent.click(screen.getByLabelText(/Show weekly limits/))
+
+    expect(screen.getAllByText('Weekly')).toHaveLength(2)
+    expect(screen.getByText('39', { exact: true })).toBeInTheDocument()
+    expect(screen.getByText('27', { exact: true })).toBeInTheDocument()
+  })
 })

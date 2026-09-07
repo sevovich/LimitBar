@@ -106,8 +106,7 @@ export function formatTrayTitle(
       if (settings.showWeekly) {
         values.push(getWindow(snapshot, 'weekly')?.remainingPercent.toString() ?? '—')
       }
-      const initial = provider === 'codex' ? 'C' : 'A'
-      return `${initial} ${values.join('/')}`
+      return values.join('/')
     })
     .join(' · ')
 }

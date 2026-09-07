@@ -77,8 +77,8 @@ export function App() {
       </header>
 
       <div className="providers">
-        <ProviderCard provider={state.providers.codex} settings={state.settings} />
-        <ProviderCard provider={state.providers.claude} settings={state.settings} />
+        <ProviderCard provider={state.providers.codex} />
+        <ProviderCard provider={state.providers.claude} />
       </div>
 
       <section className={`settings${settingsOpen ? ' is-open' : ''}`}>
@@ -89,7 +89,7 @@ export function App() {
         {settingsOpen && (
           <div className="settings-content">
             <fieldset>
-              <legend>Menu bar values</legend>
+              <legend>Menu bar values only</legend>
               <label className="switch-row">
                 <span><strong>Show 5-hour limits</strong><small>Short usage window</small></span>
                 <input type="checkbox" checked={state.settings.showFiveHour} onChange={(event) => void updateSettings({ showFiveHour: event.target.checked })} />

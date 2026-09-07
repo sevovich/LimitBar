@@ -30,8 +30,8 @@ describe('usage helpers', () => {
     ]
 
     expect(formatTrayTitle({ codex, claude }, { showFiveHour: true, showWeekly: true }))
-      .toBe('C 68/39 · A 53/27')
+      .toBe('68/39 · 53/27')
     expect(formatTrayTitle({ codex, claude }, { showFiveHour: false, showWeekly: true }))
-      .toBe('C 39 · A 27')
+      .toBe('39 · 27')
   })
 })

@@ -1,10 +1,9 @@
-import type { AppSettings, LimitWindow, ProviderSnapshot } from '../shared/contracts'
+import type { LimitWindow, ProviderSnapshot } from '../shared/contracts'
 import { getWindow, remainingTone } from '../shared/usage'
 import { DualGauge } from './DualGauge'
 
 interface ProviderCardProps {
   provider: ProviderSnapshot
-  settings: AppSettings
 }
 
 const relativeTime = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
@@ -47,7 +46,7 @@ function sourceName(provider: ProviderSnapshot): string {
   return 'Claude local snapshot'
 }
 
-export function ProviderCard({ provider, settings }: ProviderCardProps) {
+export function ProviderCard({ provider }: ProviderCardProps) {
   const fiveHour = getWindow(provider, 'five-hour')
   const weekly = getWindow(provider, 'weekly')
   return (
@@ -67,12 +66,10 @@ export function ProviderCard({ provider, settings }: ProviderCardProps) {
         <div className="provider-body">
           <DualGauge
             provider={provider}
-            showFiveHour={settings.showFiveHour}
-            showWeekly={settings.showWeekly}
           />
           <div className="limit-list">
-            {settings.showFiveHour && <LimitRow window={fiveHour} />}
-            {settings.showWeekly && <LimitRow window={weekly} />}
+            <LimitRow window={fiveHour} />
+            <LimitRow window={weekly} />
           </div>
         </div>
       ) : (
