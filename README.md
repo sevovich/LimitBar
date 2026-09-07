@@ -2,7 +2,7 @@
 
 LimitBar is a small, local-first macOS menu-bar app that shows how much of your Codex and Claude subscription limits remains.
 
-`68/39 · 53/27` means Codex has 68% of its 5-hour allowance and 39% of its weekly allowance left; Claude has 53% and 27% left. The tray icon uses green for Codex and orange for Claude, in that order.
+The menu bar shows one colored item per provider. A green Codex item and an orange Claude item might read `68/39` and `53/27`; those are the remaining percentages for the 5-hour and weekly windows.
 
 ## What it does
 
@@ -10,7 +10,7 @@ LimitBar is a small, local-first macOS menu-bar app that shows how much of your 
 - Displays **remaining** percentages for 5-hour and weekly windows.
 - Lets you choose which windows appear in the menu bar; the popover always keeps both windows available.
 - Reads Codex limits through the locally installed Codex CLI.
-- Uses Claude Code's existing OAuth sign-in by default, with an optional local snapshot mode.
+- Uses Claude Code's existing OAuth sign-in by default, with Claude Desktop history and a local snapshot mode as alternatives.
 - Refreshes every five minutes and keeps the last successful reading when a provider is temporarily unavailable.
 - Stores no access tokens. Cached usage data and settings stay on your Mac.
 
@@ -20,7 +20,7 @@ LimitBar is a small, local-first macOS menu-bar app that shows how much of your 
 - macOS 14 or newer
 - Node.js 22 or newer
 - Codex CLI installed and signed in
-- Claude Code installed and signed in (for Claude limits)
+- Claude Code or Claude Desktop installed and signed in (for Claude limits)
 
 ## Build and run
 
@@ -62,6 +62,10 @@ LimitBar checks `claude auth status`, then reads Claude Code's existing credenti
 This option installs a small status-line helper into Claude Code's settings. Claude Code writes its limit data to `~/.limitbar/claude-usage.json`; LimitBar only reads that file. An existing Claude status-line command is preserved and chained, then restored if you switch back to OAuth.
 
 Local snapshots require a Claude Code version that includes `rate_limits` in status-line input. If no snapshot exists, open Claude Code and send a message once.
+
+### Claude — Desktop
+
+Desktop mode reads Claude Desktop's local `plan-usage-history.json`, which contains the app's sampled 5-hour and 7-day percentages. It does not read Claude Desktop credentials or make a second usage request. Open Claude Desktop to let it refresh the file; readings older than 15 minutes are shown as stale.
 
 ## Development
 

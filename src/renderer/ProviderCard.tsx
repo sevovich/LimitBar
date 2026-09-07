@@ -43,6 +43,7 @@ function LimitRow({ window }: { window: LimitWindow | undefined }) {
 function sourceName(provider: ProviderSnapshot): string {
   if (provider.source === 'app-server') return 'Codex account'
   if (provider.source === 'oauth') return 'Claude OAuth'
+  if (provider.source === 'desktop') return 'Claude Desktop'
   return 'Claude local snapshot'
 }
 

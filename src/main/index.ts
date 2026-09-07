@@ -9,11 +9,12 @@ import {
   Tray,
 } from 'electron'
 import type { AppState } from '../shared/contracts'
-import { formatTrayTitle } from '../shared/usage'
+import { formatProviderTrayTitle } from '../shared/usage'
 import { assertSettingsPatch, UsageCoordinator } from './coordinator'
 import { StateStore } from './store'
 
-let tray: Tray | null = null
+let codexTray: Tray | null = null
+let claudeTray: Tray | null = null
 let popover: BrowserWindow | null = null
 let coordinator: UsageCoordinator | null = null
 let quitting = false
@@ -21,20 +22,26 @@ let quitting = false
 app.setName('LimitBar')
 
 function createTray(): void {
+  codexTray = createProviderTray('#168067', 'Codex limits')
+  claudeTray = createProviderTray('#b45b36', 'Claude limits')
+}
+
+function createProviderTray(color: string, tooltip: string): Tray {
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
-      <circle cx="9" cy="9" r="7" fill="none" stroke="#168067" stroke-width="1.5" opacity=".26"/>
-      <path d="M9 2a7 7 0 1 1-6.5 9.6" fill="none" stroke="#168067" stroke-width="1.8" stroke-linecap="round"/>
-      <path d="M9 2a7 7 0 0 1 5.9 10.8" fill="none" stroke="#b45b36" stroke-width="1.8" stroke-linecap="round"/>
-      <circle cx="9" cy="9" r="1.25" fill="#777b80"/>
+      <circle cx="9" cy="9" r="7" fill="${color}" opacity=".18"/>
+      <circle cx="9" cy="9" r="5.25" fill="none" stroke="${color}" stroke-width="1.8"/>
+      <circle cx="9" cy="9" r="1.7" fill="${color}"/>
     </svg>`
   const icon = nativeImage.createFromDataURL(
     `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`,
   )
-  tray = new Tray(icon)
-  tray.setToolTip('LimitBar · green Codex · orange Claude')
-  tray.on('click', togglePopover)
-  tray.on('right-click', () => tray?.popUpContextMenu(buildContextMenu()))
+  icon.setTemplateImage(false)
+  const providerTray = new Tray(icon)
+  providerTray.setToolTip(tooltip)
+  providerTray.on('click', () => togglePopover(providerTray))
+  providerTray.on('right-click', () => providerTray.popUpContextMenu(buildContextMenu()))
+  return providerTray
 }
 
 function createPopover(): void {
@@ -73,13 +80,13 @@ function createPopover(): void {
   })
 }
 
-function togglePopover(): void {
-  if (!tray || !popover) return
+function togglePopover(sourceTray: Tray): void {
+  if (!popover) return
   if (popover.isVisible()) {
     popover.hide()
     return
   }
-  const trayBounds = tray.getBounds()
+  const trayBounds = sourceTray.getBounds()
   const display = screen.getDisplayNearestPoint({ x: trayBounds.x, y: trayBounds.y })
   const windowBounds = popover.getBounds()
   const x = Math.round(
@@ -103,7 +110,10 @@ function buildContextMenu(): Menu {
 }
 
 function updateUi(state: AppState): void {
-  tray?.setTitle(` ${formatTrayTitle(state.providers, state.settings)}`, {
+  codexTray?.setTitle(` ${formatProviderTrayTitle(state.providers.codex, state.settings)}`, {
+    fontType: 'monospacedDigit',
+  })
+  claudeTray?.setTitle(` ${formatProviderTrayTitle(state.providers.claude, state.settings)}`, {
     fontType: 'monospacedDigit',
   })
   if (popover && !popover.isDestroyed()) popover.webContents.send('state:changed', state)

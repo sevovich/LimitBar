@@ -4,7 +4,7 @@
 
 LimitBar is a small, self-built macOS menu-bar application for Apple Silicon Macs running macOS 14 or later. It shows the remaining subscription capacity for Codex and Claude Code without requiring the user to open either application.
 
-The menu-bar label shows both providers at the same time. The tray icon uses green for Codex and orange for Claude; the title contains compact values such as `68/39 · 53/27`, where the values are remaining percentages for the five-hour and weekly windows in that order.
+The menu bar shows two compact status items, one green for Codex and one orange for Claude. Each title contains the provider's remaining percentages, such as `68/39` for five-hour and weekly capacity.
 
 ## First-release scope
 
@@ -15,7 +15,7 @@ The menu-bar label shows both providers at the same time. The tray icon uses gre
 - Show all available windows, reset times, freshness, and provider errors in a click-opened popover.
 - Refresh automatically every five minutes and on demand.
 - Cache the last successful sanitized reading so temporary failures do not blank the UI.
-- Offer Claude `OAuth — Recommended` and `Local snapshots` data modes.
+- Offer Claude `OAuth — Recommended`, `Desktop history`, and `Local snapshots` data modes.
 - Build locally on Apple Silicon without an Apple Developer account.
 
 The first release does not include notifications, auto-update, App Store distribution, Intel support, multi-account support, API billing dashboards, or providers other than Codex and Claude Code.
@@ -57,9 +57,13 @@ Local mode installs an opt-in status-line wrapper that receives Claude Code's sa
 
 Local snapshots update only while a compatible Claude Code terminal session is active. The UI makes that limitation explicit through its freshness indicator.
 
+### Claude Desktop history
+
+Desktop mode reads the latest sanitized sample from Claude Desktop's local `plan-usage-history.json`. The sample contains consumed percentages for five-hour and seven-day windows; LimitBar converts them to remaining percentages. No Desktop credential is read. Samples older than 15 minutes remain visible but are marked stale.
+
 ## User interface
 
-The tray label uses monospaced digits and compact values. With both windows enabled, it renders `short/long · short/long`; if one window is disabled, each provider renders one number. The icon provides the provider color/order cue. Missing values render as an em dash and stale values keep their last number with a visible stale state in the popover. Window toggles apply to the menu bar title only; the popover always shows both windows.
+Each tray item uses monospaced digits and compact values. With both windows enabled, it renders `short/long`; if one window is disabled, it renders one number. The colored icon identifies the provider without a `C` or `A` prefix. Missing values render as an em dash and stale values keep their last number with a visible stale state in the popover. Window toggles apply to the menu bar titles only; the popover always shows both windows.
 
 Clicking the tray opens a compact, keyboard-accessible popover with one card per provider. Each card shows remaining percentage bars, human-readable reset times, last refresh time, source mode, and any actionable error. Remaining-capacity colors progress from green to amber to red as capacity falls.
 

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parseClaudeCredentials, parseClaudeUsage } from '../src/main/providers/claude'
+import { parseClaudeDesktopUsage } from '../src/main/providers/claude-desktop'
 import { parseCodexResponse } from '../src/main/providers/codex'
 
 describe('Codex response parsing', () => {
@@ -43,5 +44,28 @@ describe('Claude response parsing', () => {
     expect(parseClaudeCredentials(JSON.stringify({
       claudeAiOauth: { accessToken: 'secret-token', refreshToken: 'not-used' },
     }))).toBe('secret-token')
+  })
+
+  it('reads Claude Desktop history as remaining percentages', () => {
+    const snapshot = parseClaudeDesktopUsage({
+      version: 2,
+      samples: [{
+        t: '2026-09-05T10:00:00Z',
+        u: { fh: 22, sd: 40 },
+      }],
+    }, new Date('2026-09-05T10:10:00Z'))
+
+    expect(snapshot.source).toBe('desktop')
+    expect(snapshot.status).toBe('ready')
+    expect(snapshot.windows.map((window) => window.remainingPercent)).toEqual([78, 60])
+  })
+
+  it('marks old Claude Desktop history as stale but usable', () => {
+    const snapshot = parseClaudeDesktopUsage({
+      samples: [{ t: '2026-09-05T08:00:00Z', u: { fh: 22, sd: 40 } }],
+    }, new Date('2026-09-05T10:00:00Z'))
+
+    expect(snapshot.status).toBe('stale')
+    expect(snapshot.windows).toHaveLength(2)
   })
 })

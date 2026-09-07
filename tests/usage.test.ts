@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { emptyProvider, formatTrayTitle, makeLimitWindow, remainingFromUsed, validateSettings } from '../src/shared/usage'
+import { emptyProvider, formatProviderTrayTitle, formatTrayTitle, makeLimitWindow, remainingFromUsed, validateSettings } from '../src/shared/usage'
 
 describe('usage helpers', () => {
   it('converts provider utilization into remaining percentages', () => {
@@ -33,5 +33,6 @@ describe('usage helpers', () => {
       .toBe('68/39 · 53/27')
     expect(formatTrayTitle({ codex, claude }, { showFiveHour: false, showWeekly: true }))
       .toBe('39 · 27')
+    expect(formatProviderTrayTitle(codex, { showFiveHour: true, showWeekly: false })).toBe('68')
   })
 })

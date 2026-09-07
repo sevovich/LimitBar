@@ -1,8 +1,8 @@
 export type ProviderId = 'codex' | 'claude'
-export type ProviderSource = 'app-server' | 'oauth' | 'local'
+export type ProviderSource = 'app-server' | 'oauth' | 'desktop' | 'local'
 export type ProviderStatus = 'loading' | 'ready' | 'stale' | 'unavailable'
 export type LimitKind = 'five-hour' | 'weekly' | 'other'
-export type ClaudeSource = 'oauth' | 'local'
+export type ClaudeSource = 'oauth' | 'desktop' | 'local'
 
 export interface LimitWindow {
   id: string

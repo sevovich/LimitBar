@@ -153,7 +153,7 @@ legend { padding: 0; margin-bottom: 7px; color: var(--muted); font-size: 9px; fo
 .switch-row input:checked + i::after { transform: translateX(11px); }
 .switch-row input:focus-visible + i { outline: 2px solid rgba(20,120,240,.6); outline-offset: 2px; }
 .standalone { margin: 7px 0; }
-.segmented { display: grid; grid-template-columns: 1fr 1fr; padding: 2px; border-radius: 7px; background: rgba(55,58,63,.1); }
+.segmented { display: grid; grid-template-columns: repeat(3, 1fr); padding: 2px; border-radius: 7px; background: rgba(55,58,63,.1); }
 .segmented label { cursor: pointer; }
 .segmented input { position: absolute; opacity: 0; }
 .segmented span { display: block; padding: 5px; border-radius: 5px; color: var(--muted); font-size: 9.5px; text-align: center; }

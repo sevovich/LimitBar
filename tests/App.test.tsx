@@ -19,9 +19,13 @@ describe('LimitBar renderer', () => {
     expect(screen.getByLabelText(/Show 5-hour limits/)).toBeChecked()
     expect(screen.getByLabelText(/Show weekly limits/)).toBeChecked()
     expect(screen.getByRole('radio', { name: 'OAuth' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Desktop' })).not.toBeChecked()
 
     fireEvent.click(screen.getByRole('radio', { name: 'Local' }))
     expect(screen.getByRole('radio', { name: 'Local' })).toBeChecked()
+
+    fireEvent.click(screen.getByRole('radio', { name: 'Desktop' }))
+    expect(screen.getByRole('radio', { name: 'Desktop' })).toBeChecked()
   })
 
   it('keeps both provider windows visible when a menu bar window is hidden', () => {

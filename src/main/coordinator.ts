@@ -5,6 +5,7 @@ import type {
 } from '../shared/contracts'
 import { validateSettings } from '../shared/usage'
 import { configureClaudeLocalSnapshots, probeClaudeLocal } from './providers/claude-local'
+import { probeClaudeDesktop } from './providers/claude-desktop'
 import { probeClaudeOAuth } from './providers/claude'
 import { probeCodex } from './providers/codex'
 import { StateStore } from './store'
@@ -57,7 +58,11 @@ export class UsageCoordinator {
     this.emit()
 
     const claudeProbe =
-      this.state.settings.claudeSource === 'local' ? probeClaudeLocal : probeClaudeOAuth
+      this.state.settings.claudeSource === 'local'
+        ? probeClaudeLocal
+        : this.state.settings.claudeSource === 'desktop'
+          ? probeClaudeDesktop
+          : probeClaudeOAuth
     const [codex, claude] = await Promise.all([probeCodex(), claudeProbe()])
     const providers = {
       codex: mergeWithCache(codex, this.state.providers.codex),
@@ -140,6 +145,7 @@ export function assertSettingsPatch(value: unknown): SettingsPatch {
   if (
     'claudeSource' in input &&
     input.claudeSource !== 'oauth' &&
+    input.claudeSource !== 'desktop' &&
     input.claudeSource !== 'local'
   ) {
     throw new Error('Invalid Claude source.')

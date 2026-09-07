@@ -97,18 +97,22 @@ export function formatTrayTitle(
   settings: Pick<AppSettings, 'showFiveHour' | 'showWeekly'>,
 ): string {
   return (['codex', 'claude'] as const)
-    .map((provider) => {
-      const snapshot = providers[provider]
-      const values: string[] = []
-      if (settings.showFiveHour) {
-        values.push(getWindow(snapshot, 'five-hour')?.remainingPercent.toString() ?? '—')
-      }
-      if (settings.showWeekly) {
-        values.push(getWindow(snapshot, 'weekly')?.remainingPercent.toString() ?? '—')
-      }
-      return values.join('/')
-    })
+    .map((provider) => formatProviderTrayTitle(providers[provider], settings))
     .join(' · ')
+}
+
+export function formatProviderTrayTitle(
+  snapshot: ProviderSnapshot,
+  settings: Pick<AppSettings, 'showFiveHour' | 'showWeekly'>,
+): string {
+  const values: string[] = []
+  if (settings.showFiveHour) {
+    values.push(getWindow(snapshot, 'five-hour')?.remainingPercent.toString() ?? '—')
+  }
+  if (settings.showWeekly) {
+    values.push(getWindow(snapshot, 'weekly')?.remainingPercent.toString() ?? '—')
+  }
+  return values.join('/')
 }
 
 export function remainingTone(remaining: number): 'safe' | 'watch' | 'critical' {
